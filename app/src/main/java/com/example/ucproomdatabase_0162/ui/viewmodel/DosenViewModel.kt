@@ -1,6 +1,8 @@
 package com.example.ucproomdatabase_0162.ui.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.ucproomdatabase_0162.data.entity.Dosen
 import com.example.ucproomdatabase_0162.repository.LocalRepositoryDsn
@@ -8,10 +10,28 @@ import com.example.ucproomdatabase_0162.repository.RepositoryDsn
 
 class DosenViewModel(private val repositoryDsn: RepositoryDsn) : ViewModel(){
 
+    var uiState by mutableStateOf(DsnUIState())
+
+    // Memperbarui state berdasarkan input pengguna
+    fun updateState (dosenEvent: DosenEvent){
+        uiState = uiState.copy(
+            dosenEvent = dosenEvent,
+        )
+    }
+    // validasi data input pengguna
+
 
 }
 
 
+
+
+
+data class DsnUIState(
+    val dosenEvent: DosenEvent = DosenEvent(),
+    val isEntryValid: FormErrorState = FormErrorState(),
+    val snackBarMessage: String? = null,
+)
 
 
 data class FormErrorState(
