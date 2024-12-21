@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ucproomdatabase_0162.data.entity.Dosen
-import com.example.ucproomdatabase_0162.repository.LocalRepositoryDsn
 import com.example.ucproomdatabase_0162.repository.RepositoryDsn
 import kotlinx.coroutines.launch
 
@@ -33,11 +32,11 @@ class DosenViewModel(private val repositoryDsn: RepositoryDsn) : ViewModel(){
     }
 
     fun saveData(){
-        val currentEvent = uiState.dosenEvent
+        val currentEventDsn = uiState.dosenEvent
         if (validateFields()){
             viewModelScope.launch {
                 try {
-                    repositoryDsn.insertDsn(currentEvent.toDosenEntity())
+                    repositoryDsn.insertDsn(currentEventDsn.toDosenEntity())
                     uiState = uiState.copy(
                         snackBarMessage = "Data berhasil disimpan",
                         dosenEvent = DosenEvent(),
