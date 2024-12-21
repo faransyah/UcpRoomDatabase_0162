@@ -6,9 +6,9 @@ interface AlamatNavigasi{
 object DestinasiHome : AlamatNavigasi{
     override val route = "home"
 }
-
-
-
+object DestinasiHomeDsn : AlamatNavigasi{
+    override val route = "home_dsn"
+}
 object DestinasiDetailMk : AlamatNavigasi{
     override val route = "detailmk"
     const val KODE = "kode"
