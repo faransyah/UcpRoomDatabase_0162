@@ -18,6 +18,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ucproomdatabase_0162.data.entity.Dosen
 import com.example.ucproomdatabase_0162.ui.customwidget.TopAppBar
 import com.example.ucproomdatabase_0162.ui.navigation.AlamatNavigasi
 import com.example.ucproomdatabase_0162.ui.viewmodel.MataKuliahEvent
@@ -36,7 +38,7 @@ import com.example.ucproomdatabase_0162.ui.viewmodel.PenyediaViewModel
 import kotlinx.coroutines.launch
 import java.text.Normalizer.Form
 
-object MkDestinasiInsert: AlamatNavigasi{
+object DestinasiInsertMk: AlamatNavigasi{
     override val route: String = "insert_mk"
 }
 
@@ -48,7 +50,7 @@ fun InsertMkView(
     viewModel: MataKuliahViewModel = viewModel(factory = PenyediaViewModel.Factory )
 
 ){
-    val uiState = viewModel.uiState // Ambil UI state dai viewmodel
+    val uiState = viewModel.uiStateMk // Ambil UI state dai viewmodel
     val SnackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -73,7 +75,7 @@ fun InsertMkView(
             TopAppBar(
                 onBack = onBack,
                 showBackButton = true,
-                judul = "Tambah Mahasiswa"
+                judul = "Tambah MataKuliah"
             )
             //isi body
             InsertBodyMk(
@@ -86,7 +88,9 @@ fun InsertMkView(
                         viewModel.saveDataMk()
                     }
                     onNavigate
-                }
+                },
+                dsnList = uiState.dsnList
+
             )
         }
 
@@ -97,7 +101,8 @@ fun InsertBodyMk(
     modifier: Modifier = Modifier,
     onValuechange: (MataKuliahEvent) -> Unit,
     uiState: MkUIState,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    dsnList: List<Dosen>
 ){
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -128,6 +133,8 @@ fun FormMataKuliah(
     modifier: Modifier = Modifier
 ){
     val jenisMk = listOf("Peminatan", "Wajib")
+
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -159,7 +166,7 @@ fun FormMataKuliah(
         Text(text = errorState.namaMk ?: "", color = Color.Red)
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Jenis Kelamin")
+        Text(text = "Jenis Mata Kuliah")
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -188,7 +195,7 @@ fun FormMataKuliah(
             modifier = Modifier.fillMaxWidth(),
             value = mataKuliahEvent.sks, onValueChange = {
                 onValuechange(mataKuliahEvent.copy(sks = it))},
-            label = {Text("Alamat")},
+            label = {Text("SKS")},
             isError = errorState.sks   != null,
             placeholder = { Text("Masukkan sks")},
         )
@@ -206,7 +213,7 @@ fun FormMataKuliah(
                 },
                 label = {Text("Kode ")},
                 isError = errorState.semester     != null,
-                placeholder = { Text("Masukkan Kode")},
+                placeholder = { Text("Masukkan Semester")},
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Text(
@@ -215,10 +222,8 @@ fun FormMataKuliah(
             )
 
         }
-        Text(
-            text = errorState.semester ?: "",
-            color = Color.Red
-        )
+
+
     }
 
 }
