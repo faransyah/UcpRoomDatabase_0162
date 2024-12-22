@@ -6,15 +6,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,16 +33,59 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ucproomdatabase_0162.data.entity.MataKuliah
 import com.example.ucproomdatabase_0162.ui.viewmodel.DetailMkUiState
+import com.example.ucproomdatabase_0162.ui.viewmodel.DetailMkViewModel
+import com.example.ucproomdatabase_0162.ui.viewmodel.PenyediaViewModel
 import com.example.ucproomdatabase_0162.ui.viewmodel.toMataKuliahEntity
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DetailMkView(
+    modifier: Modifier = Modifier,
+    viewModel: DetailMkViewModel = viewModel(factory = PenyediaViewModel.Factory),
+    onBack: () -> Unit = {},
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: () -> Unit = {}
+
+){
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    onEditClick(viewModel.detailUiState.value.detailUiEvent.kode) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit Mahasiswa"
+                )
+            }
+        }
+    ) { innerPadding ->
+        val detailUiState by viewModel.detailUiState.collectAsState()
+
+        BodyDetailMk(
+            modifier = Modifier.padding(innerPadding),
+            detailMkUiState = detailUiState,
+            onDeleteClick = {
+                viewModel.deleteMhs()
+                onDeleteClick()
+            }
+        )
+    }
+}
 @Composable
 fun BodyDetailMk(
     modifier: Modifier = Modifier,
     detailMkUiState: DetailMkUiState = DetailMkUiState(),
-    onDeleteClick: () -> Unit = {}
+    onDeleteClick: () -> Unit = {},
+
+
+
 ){
     var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
 
@@ -109,19 +160,19 @@ fun ItemDetailMk(
             ComponentDetailMk(judul = "KODE MK", isinya = mataKuliah.kode)
             Spacer(modifier = Modifier.padding(4.dp))
 
-            ComponentDetailMk(judul = "Nama", isinya = mataKuliah.namaMk)
+            ComponentDetailMk(judul = "Nama Mata Kuliah", isinya = mataKuliah.namaMk)
             Spacer(modifier = Modifier.padding(4.dp))
 
-            ComponentDetailMk(judul = "Alamat", isinya = mataKuliah.sks)
+            ComponentDetailMk(judul = "sks", isinya = mataKuliah.sks)
             Spacer(modifier = Modifier.padding(4.dp))
 
-            ComponentDetailMk(judul = "Jenis Kelamin", isinya = mataKuliah.semester)
+            ComponentDetailMk(judul = "Semester", isinya = mataKuliah.semester)
             Spacer(modifier = Modifier.padding(4.dp))
 
-            ComponentDetailMk(judul = "Kelas", isinya = mataKuliah.jenisMk)
+            ComponentDetailMk(judul = "Jenis MataKuliah", isinya = mataKuliah.jenisMk)
             Spacer(modifier = Modifier.padding(4.dp))
 
-            ComponentDetailMk(judul = "Angkatan", isinya = mataKuliah.dosenPengampu)
+            ComponentDetailMk(judul = "Dosen Pengampu", isinya = mataKuliah.dosenPengampu)
             Spacer(modifier = Modifier.padding(4.dp))
         }
 
