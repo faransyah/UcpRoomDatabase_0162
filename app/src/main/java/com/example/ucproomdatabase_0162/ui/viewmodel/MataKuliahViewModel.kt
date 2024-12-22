@@ -5,51 +5,68 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ucproomdatabase_0162.data.entity.Dosen
 import com.example.ucproomdatabase_0162.data.entity.MataKuliah
+import com.example.ucproomdatabase_0162.repository.RepositoryDsn
 import com.example.ucproomdatabase_0162.repository.RepositoryMk
 import kotlinx.coroutines.launch
 
-class MataKuliahViewModel(private val repositoryMk: RepositoryMk): ViewModel() {
+class MataKuliahViewModel(
+    private val repositoryMk: RepositoryMk,
+    private val repositoryDsn: RepositoryDsn
 
-    var uiState by mutableStateOf(MkUIState())
+): ViewModel() {
 
+   var uiStateMk by mutableStateOf(MkUIState())
+       private set
+
+    var dsnList by mutableStateOf<List<Dosen>>(emptyList())
+        private set
+    init {
+    viewModelScope.launch {
+        repositoryDsn.getAllDsn().collect { dosenList ->
+            this@MataKuliahViewModel.dsnList = dosenList
+            updateUiState() // Update UI State after fetching Dosen
+        }
+    }
+}
     fun updateState (mataKuliahEvent: MataKuliahEvent){
-        uiState = uiState.copy(
+        uiStateMk = uiStateMk.copy(
             mataKuliahEvent = mataKuliahEvent,
         )
     }
-    private fun validateFields(): Boolean{
-        val event = uiState.mataKuliahEvent
-        val errorState = MkFormErrorState(
-            kode = if(event.kode.isNotEmpty()) null else "NIM tidak boleh kosong",
-            namaMk = if(event.namaMk.isNotEmpty()) null else "Nama tidak boleh kosong",
-            sks = if(event.sks.isNotEmpty()) null else "Jenis Kelamin tidak boleh kosong",
-            semester = if(event.semester.isNotEmpty()) null else "Alamat tidak boleh kosong",
-            jenisMk = if(event.jenisMk.isNotEmpty()) null else "Kelas tidak boleh kosong",
-            dosenPengampu = if(event.dosenPengampu.isNotEmpty()) null else "Angkatan tidak boleh kosong"
+    private fun validateFieldsMk(): Boolean{
+        val event = uiStateMk.mataKuliahEvent
+        val errorStateMk = MkFormErrorState(
+            kode = if(event.kode.isNotEmpty()) null else "Kode tidak boleh kosong",
+            namaMk = if(event.namaMk.isNotEmpty()) null else "Nama Matakuliah tidak boleh kosong",
+            sks = if(event.sks.isNotEmpty()) null else "SKS tidak boleh kosong",
+            semester = if(event.semester.isNotEmpty()) null else "Semester tidak boleh kosong",
+            jenisMk = if(event.jenisMk.isNotEmpty()) null else "Jenis MataKuliah boleh kosong",
+            dosenPengampu = if(event.dosenPengampu.isNotEmpty()) null else "Dosen Pengampu tidak boleh kosong"
         )
-        uiState = uiState.copy(isentryValidval = errorState)
-        return errorState.isValid()
+        uiStateMk = uiStateMk.copy(isentryValidval = errorStateMk)
+        return errorStateMk.isValid()
     }
-    fun saveData() {
-        val currentEvent = uiState.mataKuliahEvent
-        if (validateFields()) {
+    fun saveDataMk() {
+        val currentEvent = uiStateMk.mataKuliahEvent
+        if (validateFieldsMk()) {
             viewModelScope.launch {
                 try {
                     repositoryMk.insertMk(currentEvent.toMataKuliahEntity())
-                    uiState = uiState.copy(
+                    uiStateMk = uiStateMk.copy(
                         snackbarMessage = "Data berhasil disimpan",
                         mataKuliahEvent = MataKuliahEvent(),  // Reset input form
                         isentryValidval = MkFormErrorState() // Reset error state
                     )
                 } catch (e: Exception) {
-                    uiState = uiState.copy(
+                    uiStateMk = uiStateMk.copy(
                         snackbarMessage = "Data gagal disimpan"
                     )
                 }
             }
         } else {
-            uiState = uiState.copy(
+            uiStateMk = uiStateMk.copy(
                 snackbarMessage = "Input tidak valid, periksa kembali data anda."
             )
         }
@@ -57,15 +74,19 @@ class MataKuliahViewModel(private val repositoryMk: RepositoryMk): ViewModel() {
 
     // Reset pesan Snackbar setelah ditampilkan
     fun resetSnackbarMessage() {
-        uiState = uiState.copy(snackbarMessage = null)
+        uiStateMk = uiStateMk.copy(snackbarMessage = null)
     }
-
+    private fun updateUiState(){
+        uiStateMk = uiStateMk.copy(dsnList = dsnList)
+    }
 }
 
 data class MkUIState(
     val mataKuliahEvent: MataKuliahEvent = MataKuliahEvent(),
     val isentryValidval : MkFormErrorState = MkFormErrorState(),
-    val snackbarMessage: String? = null
+    val snackbarMessage: String? = null,
+    val dsnList: List<Dosen> = emptyList()
+
 )
 
 data class MkFormErrorState(
