@@ -9,7 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -18,9 +25,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -113,7 +122,8 @@ fun InsertBodyMk(
             mataKuliahEvent = uiState.mataKuliahEvent,
             onValuechange = onValuechange,
             errorState = uiState.isentryValidval,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            dsnList = dsnList
         )
         Button(
             onClick = onClick,
@@ -125,14 +135,20 @@ fun InsertBodyMk(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormMataKuliah(
     mataKuliahEvent: MataKuliahEvent = MataKuliahEvent(),
     onValuechange: (MataKuliahEvent) -> Unit,
     errorState: MkFormErrorState = MkFormErrorState(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    dsnList: List<Dosen>
 ){
     val jenisMk = listOf("Peminatan", "Wajib")
+
+    var chosenDropDown by remember { mutableStateOf(mataKuliahEvent.dosenPengampu)}
+
+    var expanded by remember { mutableStateOf(false) }
 
 
     Column(
@@ -165,6 +181,37 @@ fun FormMataKuliah(
         )
         Text(text = errorState.namaMk ?: "", color = Color.Red)
 
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = mataKuliahEvent.sks, onValueChange = {
+                onValuechange(mataKuliahEvent.copy(sks = it))},
+            label = {Text("SKS")},
+            isError = errorState.sks   != null,
+            placeholder = { Text("Masukkan sks")},
+        )
+        Text(
+            text = errorState.sks ?: "", color = Color.Red
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = mataKuliahEvent.semester,
+                onValueChange= {
+                    onValuechange(mataKuliahEvent.copy(semester = it))
+                },
+                label = {Text("Semester ")},
+                isError = errorState.semester     != null,
+                placeholder = { Text("Masukkan Semester")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            Text(
+                text = errorState.semester ?: "",
+                color = Color.Red
+            )
+
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Jenis Mata Kuliah")
         Row(
@@ -191,37 +238,44 @@ fun FormMataKuliah(
             text = errorState.jenisMk ?: "",
             color = Color.Red
         )
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = mataKuliahEvent.sks, onValueChange = {
-                onValuechange(mataKuliahEvent.copy(sks = it))},
-            label = {Text("SKS")},
-            isError = errorState.sks   != null,
-            placeholder = { Text("Masukkan sks")},
-        )
-        Text(
-            text = errorState.sks ?: "", color = Color.Red
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth()
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {expanded = !expanded}
         ) {
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = mataKuliahEvent.semester,
-                onValueChange= {
-                    onValuechange(mataKuliahEvent.copy(kode = it))
+                value = chosenDropDown,
+                onValueChange = {},
+                label = { Text("Pilih Dosen Pengampu")},
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Expand Menu"
+                    )
                 },
-                label = {Text("Kode ")},
-                isError = errorState.semester     != null,
-                placeholder = { Text("Masukkan Semester")},
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                readOnly = true,
+                isError = errorState.dosenPengampu != null
             )
-            Text(
-                text = errorState.kode ?: "",
-                color = Color.Red
-            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false}
+            ) {
+                dsnList.forEach({ dosen ->
+                    DropdownMenuItem(
+                        onClick = {
+                            chosenDropDown = dosen.nama
+                            expanded = false
+                            onValuechange(mataKuliahEvent.copy(dosenPengampu = dosen.nama))
+                        },
+                        text = { Text(text = dosen.nama )}
+                    )
+
+                })
+            }
 
         }
+        Text(text = errorState.dosenPengampu ?: "", color = Color.Red)
 
 
     }
