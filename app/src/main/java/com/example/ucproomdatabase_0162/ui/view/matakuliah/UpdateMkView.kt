@@ -75,17 +75,17 @@ fun UpdateMkView(
                 },
                 onClick = {
                     coroutineScope.launch {
-                        if (viewModel.validateFieldsMk()){
+                        if (viewModel.validateFieldsMk()) {
                             viewModel.updateData()
                             delay(600)
-                            withContext(Dispatchers.Main){
+                            withContext(Dispatchers.Main) {
                                 onNavigate()
                             }
                         }
                     }
-                }
+                },
+                dsnList = uiState.dsnList
             )
-
         }
     }
 
