@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ucproomdatabase_0162.data.entity.Dosen
 import com.example.ucproomdatabase_0162.data.entity.MataKuliah
+import com.example.ucproomdatabase_0162.repository.RepositoryDsn
 import com.example.ucproomdatabase_0162.repository.RepositoryMk
 import com.example.ucproomdatabase_0162.ui.navigation.DestinasiUpdateMk
 import kotlinx.coroutines.flow.filterNotNull
@@ -15,13 +17,15 @@ import kotlinx.coroutines.launch
 
 class UpdateMkViewModel(
     savedStateHandle: SavedStateHandle,
-    private val repositoryMk: RepositoryMk
+    private val repositoryMk: RepositoryMk,
+    private val repositoryDsn: RepositoryDsn
 ): ViewModel(){
 
     var updateUIState by mutableStateOf(MkUIState())
 
     private val _kode: String = checkNotNull(savedStateHandle[DestinasiUpdateMk.KODE])
-
+    var dsnList by mutableStateOf<List<Dosen>>(emptyList())
+        private set
 
     init {
         viewModelScope.launch {
@@ -29,6 +33,13 @@ class UpdateMkViewModel(
                 .filterNotNull()
                 .first()
                 .toUIStateMk()
+        }
+
+        viewModelScope.launch {
+            repositoryDsn.getAllDsn().collect { dosenList ->
+                this@UpdateMkViewModel.dsnList = dosenList
+                updateUIState // Update UI State after fetching Dosen
+            }
         }
     }
     fun updateState(mataKuliahEvent: MataKuliahEvent){
@@ -38,15 +49,15 @@ class UpdateMkViewModel(
         )
     }
 
-    private fun validateFields(): Boolean{
+    fun validateFieldsMk(): Boolean{
         val event = updateUIState.mataKuliahEvent
         val errorState = MkFormErrorState(
             kode = if(event.kode.isNotEmpty()) null else "Kode tidak boleh kosong",
-            namaMk = if(event.namaMk.isNotEmpty()) null else "Nama tidak boleh kosong",
-            sks = if(event.sks.isNotEmpty()) null else "Jenis Kelamin tidak boleh kosong",
-            semester = if(event.semester.isNotEmpty()) null else "Alamat tidak boleh kosong",
+            namaMk = if(event.namaMk.isNotEmpty()) null else "Nama Matakuliah tidak boleh kosong",
+            sks = if(event.sks.isNotEmpty()) null else "sks tidak boleh kosong",
+            semester = if(event.semester.isNotEmpty()) null else "Semester tidak boleh kosong",
             jenisMk = if(event.jenisMk.isNotEmpty()) null else "Kelas tidak boleh kosong",
-            dosenPengampu = if(event.dosenPengampu.isNotEmpty()) null else "Angkatan tidak boleh kosong"
+            dosenPengampu = if(event.dosenPengampu.isNotEmpty()) null else "Dosen Pengampu tidak boleh kosong"
         )
         updateUIState = updateUIState.copy(isentryValidval = errorState)
         return errorState.isValid()
@@ -55,7 +66,7 @@ class UpdateMkViewModel(
     fun updateData(){
         val currentEventMk = updateUIState.mataKuliahEvent
 
-        if (validateFields()){
+        if (validateFieldsMk()){
             viewModelScope.launch {
                 try {
                     repositoryMk.updateMk(currentEventMk.toMataKuliahEntity())
