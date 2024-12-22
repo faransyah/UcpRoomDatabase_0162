@@ -9,6 +9,11 @@ object DestinasiHome : AlamatNavigasi{
 object DestinasiHomeDsn : AlamatNavigasi{
     override val route = "home_dsn"
 }
+
+object DestinasiHomeMk : AlamatNavigasi{
+    override val route = "home_mk"
+}
+
 object DestinasiDetailMk : AlamatNavigasi{
     override val route = "detailmk"
     const val KODE = "kode"
