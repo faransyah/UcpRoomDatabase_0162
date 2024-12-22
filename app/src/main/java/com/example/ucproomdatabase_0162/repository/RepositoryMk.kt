@@ -8,7 +8,7 @@ interface RepositoryMk {
 
     fun getAllMk() : Flow<List<MataKuliah>>
 
-    fun getMhs(kode: String) : Flow<MataKuliah>
+    fun getMk(kode: String) : Flow<MataKuliah>
 
     // Mk "k" kecil
     suspend fun deleteMk(mataKuliah: MataKuliah)
