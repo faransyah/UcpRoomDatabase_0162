@@ -17,11 +17,11 @@ class HomeMkViewModel (
     private val repositoryMk: RepositoryMk
 ): ViewModel(){
 
-    val homeuiState: StateFlow<HomeMkUiState> = repositoryMk.getAllMk()
+    val homeuiStateMk: StateFlow<HomeMkUiState> = repositoryMk.getAllMk()
         .filterNotNull()
         .map {
             HomeMkUiState(
-                listMk = it.toList(),
+                listMka = it.toList(),
                 isLoading = false,
             )
 
@@ -51,7 +51,7 @@ class HomeMkViewModel (
 }
 
 data class HomeMkUiState(
-    val listMk: List<MataKuliah> = listOf(),
+    val listMka: List<MataKuliah> = listOf(),
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val errorMessage: String = ""
