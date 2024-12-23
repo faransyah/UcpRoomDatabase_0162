@@ -77,7 +77,7 @@ fun DetailMkView(
             com.example.ucproomdatabase_0162.ui.customwidget.TopAppBar(
                 onBack = onBack,
                 showBackButton = true,
-                judul = "Tambah MataKuliah"
+                judul = "Detail MataKuliah"
             )
 
             // BodyDetailMk
