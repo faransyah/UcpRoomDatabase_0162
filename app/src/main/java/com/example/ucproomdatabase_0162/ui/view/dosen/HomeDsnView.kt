@@ -29,7 +29,8 @@ fun HomeDsnView(
     viewModel: HomeDsnViewModel = viewModel(factory = PenyediaViewModel.Factory),
     onAddDsn: () -> Unit = {},
     onDetailClick: (String) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -37,8 +38,8 @@ fun HomeDsnView(
         topBar = {
             TopAppBar(
                 judul = "Daftar Dosen",
-                showBackButton = false,
-                onBack = {},
+                showBackButton = true,
+                onBack = onBack,
                 modifier = modifier
             )
         },
@@ -64,6 +65,7 @@ fun HomeDsnView(
             snackbarHostState = snackbarHostState,
             modifier = Modifier.padding(innerPadding)
         )
+
     }
 }
 
@@ -72,7 +74,8 @@ fun BodyHomeDsnView(
     homeUiState: HomeDsnUiState,
     onClick: (String) -> Unit = {},
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+
 ) {
     val coroutineScope = rememberCoroutineScope()
     when {
@@ -109,7 +112,6 @@ fun BodyHomeDsnView(
         else -> {
             ListDosen(
                 listdsn = homeUiState.listDsn,
-                onClick = onClick,
                 modifier = modifier
             )
         }
@@ -120,15 +122,14 @@ fun BodyHomeDsnView(
 fun ListDosen(
     listdsn: List<Dosen>,
     modifier: Modifier = Modifier,
-    onClick: (String) -> Unit = {}
+
 ) {
     LazyColumn(
         modifier = modifier
     ) {
         items(listdsn) { dsn ->
             CardDsn(
-                dsn = dsn,
-                onClick = { onClick(dsn.nidn) }
+                dsn = dsn
             )
         }
     }
