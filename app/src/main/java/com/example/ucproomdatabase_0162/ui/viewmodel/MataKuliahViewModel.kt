@@ -55,26 +55,26 @@ class MataKuliahViewModel(
                 try {
                     repositoryMk.insertMk(currentEvent.toMataKuliahEntity())
                     uiStateMk = uiStateMk.copy(
-                        snackbarMessage = "Data berhasil disimpan",
+                        snackbarMessageMatkul = "Data berhasil disimpan",
                         mataKuliahEvent = MataKuliahEvent(),  // Reset input form
                         isentryValidval = MkFormErrorState() // Reset error state
                     )
                 } catch (e: Exception) {
                     uiStateMk = uiStateMk.copy(
-                        snackbarMessage = "Data gagal disimpan"
+                        snackbarMessageMatkul = "Data gagal disimpan"
                     )
                 }
             }
         } else {
             uiStateMk = uiStateMk.copy(
-                snackbarMessage = "Input tidak valid, periksa kembali data anda."
+                snackbarMessageMatkul = "Input tidak valid, periksa kembali data anda."
             )
         }
     }
 
     // Reset pesan Snackbar setelah ditampilkan
     fun resetSnackbarMessage() {
-        uiStateMk = uiStateMk.copy(snackbarMessage = null)
+        uiStateMk = uiStateMk.copy(snackbarMessageMatkul = null)
     }
     private fun updateUiState(){
         uiStateMk = uiStateMk.copy(dsnList = dsnList)
@@ -84,7 +84,7 @@ class MataKuliahViewModel(
 data class MkUIState(
     val mataKuliahEvent: MataKuliahEvent = MataKuliahEvent(),
     val isentryValidval : MkFormErrorState = MkFormErrorState(),
-    val snackbarMessage: String? = null,
+    val snackbarMessageMatkul: String? = null,
     val dsnList: List<Dosen> = emptyList()
 
 )
