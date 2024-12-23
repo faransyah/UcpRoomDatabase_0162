@@ -1,6 +1,7 @@
 package com.example.ucproomdatabase_0162.ui.viewmodel
 
 import android.text.Editable.Factory
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -17,15 +18,35 @@ object PenyediaViewModel{
             )
         }
         initializer {
+            MataKuliahViewModel(
+                KrsApp().containerApp.repositoryMk,
+                KrsApp().containerApp.repositoryDsn
+            )
+        }
+        initializer {
             HomeDsnViewModel(
                 KrsApp().containerApp.repositoryDsn
             )
         }
         initializer {
-            DetailDsnViewModel(
-                createSavedStateHandle(),
-                KrsApp().containerApp.repositoryDsn
+            HomeMkViewModel(
+                KrsApp().containerApp.repositoryMk
             )
+        }
+
+        initializer {
+            DetailMkViewModel(
+                createSavedStateHandle(),
+                KrsApp().containerApp.repositoryMk
+            )
+        }
+        initializer {
+            UpdateMkViewModel(
+                createSavedStateHandle(),
+                KrsApp().containerApp.repositoryMk,
+                KrsApp().containerApp.repositoryDsn,
+
+                )
         }
     }
 }
