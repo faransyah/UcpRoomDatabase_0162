@@ -14,7 +14,7 @@ class DosenViewModel(private val repositoryDsn: RepositoryDsn) : ViewModel(){
     var uiState by mutableStateOf(DsnUIState())
 
     // Memperbarui state berdasarkan input pengguna
-    fun updateState (dosenEvent: DosenEvent){
+    fun updateStateDsn (dosenEvent: DosenEvent){
         uiState = uiState.copy(
             dosenEvent = dosenEvent,
         )
