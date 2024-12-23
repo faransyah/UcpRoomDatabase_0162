@@ -68,14 +68,30 @@ fun DetailMkView(
     ) { innerPadding ->
         val detailUiState by viewModel.detailUiState.collectAsState()
 
-        BodyDetailMk(
-            modifier = Modifier.padding(innerPadding),
-            detailMkUiState = detailUiState,
-            onDeleteClick = {
-                viewModel.deleteMhs()
-                onDeleteClick()
-            }
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize() // Agar Column mengisi seluruh ruang yang ada
+                .padding(innerPadding) // Mengatur padding keseluruhan
+        ) {
+            // TopAppBar
+            com.example.ucproomdatabase_0162.ui.customwidget.TopAppBar(
+                onBack = onBack,
+                showBackButton = true,
+                judul = "Tambah MataKuliah"
+            )
+
+            // BodyDetailMk
+            BodyDetailMk(
+                modifier = Modifier
+                    .fillMaxSize() // Agar BodyDetailMk mengisi sisa ruang
+                    .padding(16.dp), // Padding tambahan untuk BodyDetailMk
+                detailMkUiState = detailUiState,
+                onDeleteClick = {
+                    viewModel.deleteMhs()
+                    onDeleteClick()
+                }
+            )
+        }
     }
 }
 @Composable
