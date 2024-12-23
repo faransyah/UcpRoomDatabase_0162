@@ -132,15 +132,14 @@ fun PengelolaHalaman(
         }
         //update matakuliah
         composable(
-            route = DestinasiUpdateMk.routesWithArg,
+            DestinasiUpdateMk.routesWithArg,
             arguments = listOf(
                 navArgument(DestinasiUpdateMk.KODE) {
                     type = NavType.StringType
                 }
             )
         ) {
-            val kode = it.arguments?.getString(DestinasiUpdateMk.KODE)
-            kode?.let { kodeValue ->
+
                 UpdateMkView(
                     onBack = {
                         navController.popBackStack()
@@ -155,4 +154,4 @@ fun PengelolaHalaman(
 
 
     }
-}
+
