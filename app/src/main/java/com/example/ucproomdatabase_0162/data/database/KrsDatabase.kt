@@ -13,7 +13,7 @@ import com.example.ucproomdatabase_0162.data.entity.MataKuliah
 abstract class KrsDatabase : RoomDatabase(){
 
     //mendefinisikan fungsi untuk mengakses data mahasiswa
-    abstract fun dosen(): DosenDao
+    abstract fun dosenDao(): DosenDao
     abstract fun matakuliah(): MatakuliahDao
 
     companion object{
