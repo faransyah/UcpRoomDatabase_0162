@@ -21,16 +21,18 @@ class UpdateMkViewModel(
     private val repositoryDsn: RepositoryDsn
 ): ViewModel(){
 
-    var updateUIState by mutableStateOf(MkUIState())
+    var updateUIStateMk by mutableStateOf(MkUIState())
         private set
 
-    private val _kode: String = checkNotNull(savedStateHandle[DestinasiUpdateMk.KODE])
     var dsnList by mutableStateOf<List<Dosen>>(emptyList())
         private set
 
+
+    private val _kode: String = checkNotNull(savedStateHandle[DestinasiUpdateMk.KODE])
+
     init {
         viewModelScope.launch {
-            updateUIState =repositoryMk.getMk(_kode)
+            updateUIStateMk =repositoryMk.getMk(_kode)
                 .filterNotNull()
                 .first()
                 .toUIStateMk()
@@ -39,18 +41,16 @@ class UpdateMkViewModel(
         viewModelScope.launch {
             val dsnListFromRepo = repositoryDsn.getAllDsn().first()
             dsnList = dsnListFromRepo
-                updateUIState = updateUIState.copy(dsnList = dsnListFromRepo)// Update UI State after fetching Dosen
+                updateUIStateMk = updateUIStateMk.copy(dsnList = dsnListFromRepo)// Update UI State after fetching Dosen
             }
     }
-    fun updateState(mataKuliahEvent: MataKuliahEvent){
-        updateUIState = updateUIState.copy(
-            mataKuliahEvent = mataKuliahEvent
-
-        )
+    fun updateStateMk(mataKuliahEvent: MataKuliahEvent){
+        println("Update Event : $mataKuliahEvent")
+        updateUIStateMk = updateUIStateMk.copy(mataKuliahEvent = mataKuliahEvent)
     }
 
     fun validateFieldsMk(): Boolean{
-        val event = updateUIState.mataKuliahEvent
+        val event = updateUIStateMk.mataKuliahEvent
         val errorState = MkFormErrorState(
             kode = if(event.kode.isNotEmpty()) null else "Kode tidak boleh kosong",
             namaMk = if(event.namaMk.isNotEmpty()) null else "Nama Matakuliah tidak boleh kosong",
@@ -59,37 +59,39 @@ class UpdateMkViewModel(
             jenisMk = if(event.jenisMk.isNotEmpty()) null else "Kelas tidak boleh kosong",
             dosenPengampu = if(event.dosenPengampu.isNotEmpty()) null else "Dosen Pengampu tidak boleh kosong"
         )
-        updateUIState = updateUIState.copy(isentryValidval = errorState)
+        updateUIStateMk = updateUIStateMk.copy(isentryValidval = errorState)
         return errorState.isValid()
     }
 
-    fun updateData(){
-        val currentEventMk = updateUIState.mataKuliahEvent
+    fun updateData() {
+        val currentEventMk = updateUIStateMk.mataKuliahEvent
 
-        if (validateFieldsMk()){
+        if (validateFieldsMk()) {
             viewModelScope.launch {
                 try {
+                    // Menyimpan data tanpa mereset mataKuliahEvent
                     repositoryMk.updateMk(currentEventMk.toMataKuliahEntity())
-                    updateUIState = updateUIState.copy(
-                        snackbarMessage = "Data Berhasil DiUpdate",
-                        mataKuliahEvent = MataKuliahEvent(),
+                    updateUIStateMk = updateUIStateMk.copy(
+                        snackbarMessageMatkul = "Data Berhasil DiUpdate",
+                        // Jangan reset mataKuliahEvent jika ingin mempertahankan data yang baru
                         isentryValidval = MkFormErrorState()
                     )
-                    println("SnackBarMessage diatur: ${updateUIState.snackbarMessage}")
-                } catch (e: Exception){
-                    updateUIState = updateUIState.copy(
-                        snackbarMessage = "Data gagal diupdate"
+                    println("SnackBarMessage diatur: ${updateUIStateMk.snackbarMessageMatkul}")
+                } catch (e: Exception) {
+                    updateUIStateMk = updateUIStateMk.copy(
+                        snackbarMessageMatkul = "Data gagal diupdate"
                     )
                 }
             }
-        }else {
-            updateUIState = updateUIState.copy(
-                snackbarMessage = "Data gagal diupdate"
+        } else {
+            updateUIStateMk = updateUIStateMk.copy(
+                snackbarMessageMatkul = "Data gagal diupdate"
             )
         }
     }
+
     fun resetSnackBarMessage(){
-        updateUIState = updateUIState.copy(snackbarMessage = null)
+        updateUIStateMk = updateUIStateMk.copy(snackbarMessageMatkul = null)
     }
 }
 
