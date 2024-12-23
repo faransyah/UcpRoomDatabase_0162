@@ -24,7 +24,7 @@ class LocalRepositoryMk (
     }
 
     override suspend fun updateMk(mataKuliah: MataKuliah) {
-        matakuliahDao.deleteMataKuliah(mataKuliah)
+        matakuliahDao.updateMataKuliah(mataKuliah)
     }
 
 }
