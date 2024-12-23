@@ -30,14 +30,14 @@ fun UpdateMkView(
     viewModel: UpdateMkViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ){
 
-    val uiState = viewModel.updateUIState
+    val uiState = viewModel.updateUIStateMk
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
 
-    LaunchedEffect(uiState.snackbarMessage){
+    LaunchedEffect(uiState.snackbarMessageMatkul){
         println("LaunchedEffect trigerred")
-        uiState.snackbarMessage?.let{ message ->
+        uiState.snackbarMessageMatkul?.let{ message ->
             println("Snackbar message received: $message")
             coroutineScope.launch {
                 println("Launching coroutine fo snackbar")
@@ -51,7 +51,7 @@ fun UpdateMkView(
     }
 
     Scaffold(
-        modifier = Modifier,
+        modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
         topBar = {
             TopAppBar(
@@ -71,7 +71,7 @@ fun UpdateMkView(
             InsertBodyMk(
                 uiState = uiState,
                 onValuechange = { updateEvent ->
-                    viewModel.updateState(updateEvent)
+                    viewModel.updateStateMk(updateEvent)
                 },
                 onClick = {
                     coroutineScope.launch {
@@ -79,7 +79,7 @@ fun UpdateMkView(
                             viewModel.updateData()
                             delay(600)
                             withContext(Dispatchers.Main) {
-                                onNavigate()
+                                onNavigate() // Navigasi di main thread
                             }
                         }
                     }
