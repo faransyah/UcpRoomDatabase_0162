@@ -63,8 +63,8 @@ fun InsertMkView(
     val SnackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(uiState.snackbarMessage) {
-        uiState.snackbarMessage?.let {message ->
+    LaunchedEffect(uiState.snackbarMessageMatkul) {
+        uiState.snackbarMessageMatkul?.let {message ->
             coroutineScope.launch {
                 SnackbarHostState.showSnackbar(message)
                 viewModel.resetSnackbarMessage()
@@ -89,6 +89,7 @@ fun InsertMkView(
             //isi body
             InsertBodyMk(
                 uiState = uiState,
+                dsnList = uiState.dsnList,
                 onValuechange = {updateEvent ->
                     viewModel.updateState(updateEvent)
                 },
@@ -98,7 +99,6 @@ fun InsertMkView(
                     }
                     onNavigate
                 },
-                dsnList = uiState.dsnList
 
             )
         }
