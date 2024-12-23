@@ -22,6 +22,7 @@ class UpdateMkViewModel(
 ): ViewModel(){
 
     var updateUIState by mutableStateOf(MkUIState())
+        private set
 
     private val _kode: String = checkNotNull(savedStateHandle[DestinasiUpdateMk.KODE])
     var dsnList by mutableStateOf<List<Dosen>>(emptyList())
@@ -36,11 +37,10 @@ class UpdateMkViewModel(
         }
 
         viewModelScope.launch {
-            repositoryDsn.getAllDsn().collect { dosenList ->
-                this@UpdateMkViewModel.dsnList = dosenList
-                updateUIState // Update UI State after fetching Dosen
+            val dsnListFromRepo = repositoryDsn.getAllDsn().first()
+            dsnList = dsnListFromRepo
+                updateUIState = updateUIState.copy(dsnList = dsnListFromRepo)// Update UI State after fetching Dosen
             }
-        }
     }
     fun updateState(mataKuliahEvent: MataKuliahEvent){
         updateUIState = updateUIState.copy(
