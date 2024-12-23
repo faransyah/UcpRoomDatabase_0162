@@ -81,7 +81,7 @@ fun InsertDsnView(
             // Tambahkan InsertBodyDsn di sini untuk menampilkan form
             InsertBodyDsn(
                 uiState = uiState,
-                onValueChange = { updatedEvent -> viewModel.updateState(updatedEvent) },
+                onValueChange = { updatedEvent -> viewModel.updateStateDsn(updatedEvent) },
                 onClick = {
                     coroutineScope.launch {
                         viewModel.saveData()
