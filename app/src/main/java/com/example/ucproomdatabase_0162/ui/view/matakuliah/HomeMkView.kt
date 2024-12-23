@@ -1,4 +1,4 @@
-package com.example.ucproomdatabase_0162.ui.view.matakuliah
+package com.example.myapplication.ui.view.mahasiswa
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,24 +42,26 @@ import com.example.ucproomdatabase_0162.ui.viewmodel.HomeMkViewModel
 import com.example.ucproomdatabase_0162.ui.viewmodel.PenyediaViewModel
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun HomeMkView(
     viewModel: HomeMkViewModel = viewModel(factory = PenyediaViewModel.Factory),
     onAddMk: () -> Unit = {},
     onDetailClick:(String) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit
 ){
     Scaffold(
         topBar = {
             TopAppBar(
-                judul = "Daftar Mahasiswa",
-                showBackButton = false,
-                onBack = { },
+                judul = "Daftar Matakuliah",
+                showBackButton = true,
+                onBack = onBack,
                 modifier = modifier
             )
         },
         floatingActionButton = {
-            FloatingActionButton (
+            FloatingActionButton(
                 onClick = onAddMk,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(16.dp)
@@ -69,33 +72,29 @@ fun HomeMkView(
                 )
             }
         }
-    ){ innerPadding ->
-        val homeMkUiState by viewModel.homeuiStateMk.collectAsState()
+    ) {  innerPadding ->
+        val homeUiState by viewModel.homeuiStateMk.collectAsState()
 
         BodyHomeMkView(
-            homeMkUiState = homeMkUiState,
+            homeUiState = homeUiState,
             onClick = {
                 onDetailClick(it)
             },
             modifier = Modifier.padding(innerPadding)
-
         )
     }
 }
 
-
-
 @Composable
 fun BodyHomeMkView(
-    homeMkUiState: HomeMkUiState,
+    homeUiState: HomeMkUiState,
     onClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ){
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() } // Snackbar state
-
     when   {
-        homeMkUiState.isLoading -> {
+        homeUiState.isLoading -> {
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -103,24 +102,24 @@ fun BodyHomeMkView(
                 CircularProgressIndicator()
             }
         }
-        homeMkUiState.isError -> {
+        homeUiState.isError -> {
             // Menampilkan pesan error
-            LaunchedEffect(homeMkUiState.errorMessage) {
-                homeMkUiState.errorMessage?.let { message ->
+            LaunchedEffect(homeUiState.errorMessage) {
+                homeUiState.errorMessage?.let { message ->
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(message) // Tampilkan Snackbar
                     }
                 }
             }
         }
-        homeMkUiState.listMk.isEmpty() -> {
+        homeUiState.listMka.isEmpty() -> {
             // Menampilkan pesan jika data kosong
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Tidak ada data mahasiswa.",
+                    text = "Tidak ada data MataKuliah.",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(16.dp)
@@ -129,8 +128,8 @@ fun BodyHomeMkView(
         }
         else -> {
             // Menampilkan daftar mahasiswa
-            ListMk(
-                listMk = homeMkUiState.listMk,
+            LiatMataKuliah(
+                listMk = homeUiState.listMka,
                 onClick = {
                     onClick(it)
                     println(it)
@@ -140,11 +139,11 @@ fun BodyHomeMkView(
         }
 
     }
-
 }
 
+
 @Composable
-fun ListMk(
+fun LiatMataKuliah(
     listMk: List<MataKuliah>,
     modifier: Modifier = Modifier,
     onClick: (String) -> Unit = {}
@@ -162,9 +161,9 @@ fun ListMk(
             }
         )
     }
-
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardMk(
     mk: MataKuliah,
@@ -210,7 +209,7 @@ fun CardMk(
                     Icon(imageVector = Icons.Filled.Home, contentDescription = "")
                     Spacer(modifier = Modifier.padding(4.dp))
                     Text(
-                        text =  mk.jenisMk,
+                        text = mk.jenisMk,
                         fontWeight = FontWeight.Bold,
                     )
                 }
@@ -218,7 +217,3 @@ fun CardMk(
         }
     }
 }
-
-
-
-
